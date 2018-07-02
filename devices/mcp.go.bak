@@ -1,0 +1,78 @@
+package devices
+
+import (
+	"gobot.io/x/gobot/drivers/i2c"
+)
+
+var (
+	port = [2]string{"A", "B"}
+)
+
+// GofarmMCP contains MCP configuration
+type GofarmMCP struct {
+	MCP23017 *i2c.MCP23017Driver
+}
+
+// PinMode to set pin as input or output in GofarmMCP's MCP
+// Params:
+//	port string - Port A or Port B in MCP23017
+//  pin uint8 - pin0-7 in MCP23017
+//  mode uint8 - 0/output & 1/input
+// func (m *GofarmMCP) PinMode(port string, pin uint8, mode uint8) (err error) {
+// 	return m.MCP23017.PinMode(pin, mode, port)
+// }
+
+// AllPinMode to set all pins as input or output
+// Params:
+//  mode uint8 - 0/output & 1/input
+// func (m *GofarmMCP) AllPinMode(mode uint8) (err error) {
+// 	var (
+// 		myError error
+// 		i       uint8
+// 	)
+// 	for _, p := range port {
+// 		for i = 0; i < 8; i++ {
+// 			myError = m.PinMode(p, i, mode)
+// 			if myError != nil {
+// 				return myError
+// 			}
+// 		}
+// 	}
+// 	return nil
+// }
+
+// AllPinInput to set all pins as input
+func (m *GofarmMCP) AllPinInput() (err error) {
+	return m.AllPinMode(1)
+}
+
+// AllPinOutput to set all pins as input
+func (m *GofarmMCP) AllPinOutput() (err error) {
+	return m.AllPinMode(0)
+}
+
+// WritePin to write value to GofarmMCP's MCP
+// Params:
+//	port string - Port A or Port B in MCP23017
+//  pin uint8 - pin0-7 in MCP23017
+//  value uint8
+func (m *GofarmMCP) WritePin(port string, pin uint8, val uint8) (err error) {
+	return m.MCP23017.WriteGPIO(pin, val, port)
+}
+
+// WriteAllPin to write value to all pins
+func (m *GofarmMCP) WriteAllPin(val uint8) (err error) {
+	var (
+		myError error
+		i       uint8
+	)
+	for _, p := range port {
+		for i = 0; i < 8; i++ {
+			myError = m.WritePin(p, i, val)
+			if myError != nil {
+				return myError
+			}
+		}
+	}
+	return nil
+}
